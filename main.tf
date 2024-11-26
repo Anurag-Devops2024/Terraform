@@ -2,7 +2,7 @@ provider "aws" {
   region = "us-east-2"
 }
 
-resource "aws_instance" "ec2_instance" {
+resource "aws_instance" "ec2_instance_1" {
     ami           = var.ami
   instance_type = var.instance_type
 
