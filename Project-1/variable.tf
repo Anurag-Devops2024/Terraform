@@ -1,5 +1,5 @@
 variable "ami" {
-    default = "ami-830c94e3"
+    default = "ami-0866a3c8686eaeeba"
     type = string
     description = "AMI Value"
 }
@@ -17,7 +17,7 @@ variable "Name" {
 }
 
 variable "s3_bucket_Name" {
-  default = "devops_terraform"
+  default = "devopsterraform2024demo"
   type = string
   description = "S3 Bucket For Terraform"
 }

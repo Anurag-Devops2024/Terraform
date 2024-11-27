@@ -7,5 +7,9 @@ output "ami" {
 }
 
 output "aws_s3_bucket" {
-    value = aws_s3_bucket.devops_s3_Bucket.acl
+    value = aws_s3_bucket.devops_s3_Bucket.id
+}
+
+output "aws_security_group" {
+  value = aws_security_group.devopssecuritygroup.id
 }
