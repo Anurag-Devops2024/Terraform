@@ -6,3 +6,6 @@ Project-2/dev/terraform.*
 Project-3/devops_main/.terraform/*
 Project-3/devops_main/.terraform.lock.hcl
 Project-3/devops_main/terraform.*
+Project-4/devops_main/.terraform/*
+Project-4/devops_main/.terraform.lock.hcl
+Project-4/devops_main/terraform.*
