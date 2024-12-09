@@ -2,23 +2,35 @@ provider "aws" {
   region = "us-east-1"
 }
 
+terraform {
+  required_providers {
+    terraform = {
+      source = "terraform.io/builtin/terraform"
+    }
+  }
+}
+
 locals {
   project_name = "devops_2024"
+  # workspace_var  = jsondecode(file("${terraform.workspace}.tfvars.json"))
+  workspace_var2 = provider::terraform::decode_tfvars(file("${terraform.workspace}/${terraform.workspace}.tfvars"))
 }
 
 module "vpc" {
   source         = "../modules/vpc"
-  vpc_name       = "${local.project_name}_vpc"
-  vpc_cidr_block = "10.0.0.0/16"
+  vpc_name       = "${local.project_name}_vpc_${terraform.workspace}"
+  vpc_cidr_block = "${terraform.workspace}" == "dev" ? "10.0.0.0/16" : "10.10.0.0/16"
 }
 
 module "subnets" {
-  source               = "../modules/subnet"
-  vpc_id               = module.vpc.vpc_id
-  public_subnet_name   = "dev-public-subnet"
-  public_subnet_cidrs  = ["10.0.10.0/24", "10.0.20.0/24"]
+  source             = "../modules/subnet"
+  vpc_id             = module.vpc.vpc_id
+  public_subnet_name = "dev-public-subnet"
+  # public_subnet_cidrs  = ["10.0.10.0/24", "10.0.20.0/24"]
+  # private_subnet_cidrs = ["10.0.100.0/24", "10.0.200.0/24"]
   private_subnet_name  = "dev-private-subnet"
-  private_subnet_cidrs = ["10.0.100.0/24", "10.0.200.0/24"]
+  public_subnet_cidrs  = local.workspace_var2.public_subnet_cidrs
+  private_subnet_cidrs = local.workspace_var2.private_subnet_cidrs
 }
 
 module "internet_gateway" {
@@ -47,14 +59,20 @@ module "security_group" {
   public_cidr_block = module.subnets.public_subnet_cidrs
 }
 
-module "instance" {
+module "instance-1" {
   source         = "../modules/ec2"
-  name           = "webserver-1"
+  name           = "webserver-1-${terraform.workspace}"
   subnet_id      = module.subnets.public_subnet_id[1]
   security_group = module.security_group.aws_security_group
-  # ingress_security_group_id = module.security_group.ingress_ipv4_ssh
-  # ingress_ipv4_port80       = module.security_group.ingress_ipv4_port80
-  # egress_security_group_id  = module.security_group.egress_ipv4_ssh
+  instance_type  = local.workspace_var2.instance_type
+}
+
+module "instance-2" {
+  source         = "../modules/ec2"
+  name           = "webserver-2-${terraform.workspace}"
+  subnet_id      = module.subnets.public_subnet_id[1]
+  security_group = module.security_group.aws_security_group
+  instance_type  = local.workspace_var2.instance_type
 }
 
 # module "security_group_ec2" {
