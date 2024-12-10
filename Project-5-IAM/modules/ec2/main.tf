@@ -1,9 +1,10 @@
 resource "aws_instance" "webserver" {
-  ami             = var.ami
-  instance_type   = var.instance_type
-  subnet_id       = var.subnet_id
-  key_name        = "devops_demo_1"
-  security_groups = [var.security_group]
+  ami                  = var.ami
+  instance_type        = var.instance_type
+  subnet_id            = var.subnet_id
+  key_name             = "devops_demo_1"
+  security_groups      = [var.security_group]
+  iam_instance_profile = var.role_name
 
   tags = {
     Name = var.name

@@ -34,3 +34,7 @@ variable "subnet_id" {
 variable "security_group" {
   type = string
 }
+
+variable "role_name" {
+  type = string
+}

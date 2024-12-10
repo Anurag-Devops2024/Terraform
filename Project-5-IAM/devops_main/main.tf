@@ -22,6 +22,15 @@ module "vpc" {
   vpc_cidr_block = "${terraform.workspace}" == "dev" ? "10.0.0.0/16" : "10.10.0.0/16"
 }
 
+module "iam" {
+  source = "../modules/iam"
+}
+
+# resource "aws_iam_user" "demouser" {
+#   name = "tuckerdemo"
+# }
+
+
 module "subnets" {
   source             = "../modules/subnet"
   vpc_id             = module.vpc.vpc_id
@@ -65,15 +74,17 @@ module "instance-1" {
   subnet_id      = module.subnets.public_subnet_id[1]
   security_group = module.security_group.aws_security_group
   instance_type  = local.workspace_var2.instance_type
+  role_name      = module.iam.aws_iam_instance_profile
 }
 
-module "instance-2" {
-  source         = "../modules/ec2"
-  name           = "webserver-2-${terraform.workspace}"
-  subnet_id      = module.subnets.public_subnet_id[1]
-  security_group = module.security_group.aws_security_group
-  instance_type  = local.workspace_var2.instance_type
-}
+# module "instance-2" {
+#   source         = "../modules/ec2"
+#   name           = "webserver-2-${terraform.workspace}"
+#   subnet_id      = module.subnets.public_subnet_id[1]
+#   security_group = module.security_group.aws_security_group
+#   instance_type  = local.workspace_var2.instance_type
+#   role_name      = module.iam.aws_iam_role
+# }
 
 # module "security_group_ec2" {
 #   source            = "../modules/security-groups"
